@@ -20,3 +20,27 @@ class User(db.Model):
     def __repr__(self):
         return f"<User {self.email} ({self.role})>"
 
+
+class Class(db.Model):
+    __tablename__ = "classes"
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    title = db.Column(db.String(150), nullable=False)
+    description = db.Column(db.Text, nullable=True)
+
+    meet_link = db.Column(db.String(255), nullable=False)
+
+    teacher_id = db.Column(
+        db.Integer,
+        db.ForeignKey("users.id"),
+        nullable=False
+    )
+
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    teacher = db.relationship("User", backref="classes")
+
+    def __repr__(self):
+        return f"<Class {self.title}>"
+
