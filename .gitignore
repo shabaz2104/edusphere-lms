@@ -3,6 +3,7 @@ __pycache__/
 *.pyc
 .env
 venv/
+*.db
 
 # Node (if ever used)
 node_modules/
