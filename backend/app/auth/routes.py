@@ -160,3 +160,28 @@ def create_class():
             "meet_link": new_class.meet_link
         }
     }), 201
+
+@auth_bp.route("/classes", methods=["GET"])
+@jwt_required()
+def list_classes():
+    user_id = int(get_jwt_identity())
+
+    user = User.query.get(user_id)
+
+    if user.role == "teacher":
+        # Teacher sees only their classes
+        classes = Class.query.filter_by(teacher_id=user_id).all()
+    else:
+        # Student sees all classes
+        classes = Class.query.all()
+
+    return jsonify([
+        {
+            "id": c.id,
+            "title": c.title,
+            "description": c.description,
+            "meet_link": c.meet_link,
+            "teacher_id": c.teacher_id
+        }
+        for c in classes
+    ]), 200

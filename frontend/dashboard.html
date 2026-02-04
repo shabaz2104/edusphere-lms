@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="CSS/style.css">
+</head>
+<body>
+
+<nav class="navbar">
+    <h2>Dashboard</h2>
+    <button onclick="logout()">Logout</button>
+</nav>
+
+<main>
+    <div class="dashboard-container">
+        <h1 id="welcome">Loading...</h1>
+        <p id="role"></p>
+    </div>
+    <section>
+    <h2>Your Classes</h2>
+    <div id="classes" class="class-grid"></div>
+</section>
+
+</main>
+
+
+
+<script src="JS/auth.js"></script>
+<script>
+(async function () {
+    const user = await fetchMe();
+
+    if (!user) {
+        window.location.href = "login.html";
+        return;
+    }
+
+    document.getElementById("welcome").innerText =
+        `Welcome, ${user.name}`;
+    document.getElementById("role").innerText =
+        `Role: ${user.role}`;
+
+    const res = await fetch("http://127.0.0.1:5000/api/auth/classes", {
+        headers: {
+            "Authorization": "Bearer " + getToken()
+        }
+    });
+
+    const classes = await res.json();
+    const container = document.getElementById("classes");
+
+    if (!classes.length) {
+        container.innerHTML = "<p>No classes available.</p>";
+        return;
+    }
+
+    classes.forEach(c => {
+        const card = document.createElement("div");
+        card.className = "class-card";
+
+        card.innerHTML = `
+            <h3>${c.title}</h3>
+            <p>${c.description || ""}</p>
+            <a href="${c.meet_link}" target="_blank">Join Class</a>
+        `;
+
+        container.appendChild(card);
+    });
+})();
+</script>
+
+
+</body>
+</html>
